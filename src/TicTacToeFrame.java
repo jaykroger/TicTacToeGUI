@@ -17,27 +17,28 @@ public class TicTacToeFrame extends JFrame
     JLabel title;
 
     // Game Panel
-    TicTacToeTile topLeftTile;
-    TicTacToeTile topMiddleTile;
-    TicTacToeTile topRightTile;
+    static TicTacToeTile topLeftTile;
+    static TicTacToeTile topMiddleTile;
+    static TicTacToeTile topRightTile;
 
-    TicTacToeTile centerLeftTile;
-    TicTacToeTile centerMiddleTile;
-    TicTacToeTile centerRightTile;
+    static TicTacToeTile centerLeftTile;
+    static TicTacToeTile centerMiddleTile;
+    static TicTacToeTile centerRightTile;
 
-    TicTacToeTile bottomLeftTile;
-    TicTacToeTile bottomMiddleTile;
-    TicTacToeTile bottomRightTile;
+    static TicTacToeTile bottomLeftTile;
+    static TicTacToeTile bottomMiddleTile;
+    static TicTacToeTile bottomRightTile;
 
 
     // Button Panel
     JButton quitButton;
     static JOptionPane dialogBox;
+    private static int playAgain;
 
     // Backend Game Logic
     private static final int ROW = 3;
     private static final int COL = 3;
-    private int turnCounter = 0;
+    private static int turnCounter = 0;
     private static boolean isXMove = true;
     private static boolean isOMove = false;
     private static String[][] board = new String[ROW][COL];
@@ -77,6 +78,7 @@ public class TicTacToeFrame extends JFrame
     {
         gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(3, 3));
+        dialogBox = new JOptionPane();
 
         topLeftTile = new TicTacToeTile(0, 0);
         topMiddleTile = new TicTacToeTile(0, 1);
@@ -102,6 +104,7 @@ public class TicTacToeFrame extends JFrame
         gamePanel.add(bottomLeftTile);
         gamePanel.add(bottomMiddleTile);
         gamePanel.add(bottomRightTile);
+
     }
 
     private void createButtonPanel()
@@ -113,8 +116,12 @@ public class TicTacToeFrame extends JFrame
         buttonPanel.add(quitButton);
     }
 
-    private void resetBoard()
+    private static void resetBoard()
     {
+        turnCounter = 0;
+        isOMove = false;
+        isXMove = true;
+
         for (int row = 0; row < 3; row++)
         {
             for (int col = 0; col < 3; col++)
@@ -122,30 +129,115 @@ public class TicTacToeFrame extends JFrame
                 board[row][col] = " ";
             }
         }
+
+        topLeftTile.setText("");
+        topMiddleTile.setText("");
+        topRightTile.setText("");
+
+        centerLeftTile.setText("");
+        centerMiddleTile.setText("");
+        centerRightTile.setText("");
+
+        bottomLeftTile.setText("");
+        bottomMiddleTile.setText("");
+        bottomRightTile.setText("");
+
     }
 
     public static void markSpace(TicTacToeTile tile)
     {
         if (board[tile.getRow()][tile.getCol()].equalsIgnoreCase(" "))
         {
+
+            turnCounter++;
+
             if (isXMove)
             {
                 tile.setText("X");
                 board[tile.getRow()][tile.getCol()] = "X";
+                showBoard();
+
+                if (turnCounter >= 5)
+                {
+                    if (isWin("X"))
+                    {
+                        playAgain = dialogBox.showConfirmDialog(null, "X wins.\nPlay Again?", "Play Again?", JOptionPane.YES_NO_OPTION);
+
+                        if (playAgain == dialogBox.YES_OPTION)
+                        {
+                            resetBoard();
+                        }
+                        else
+                        {
+                            System.exit(0);
+                        }
+                    }
+                    else if (turnCounter >= 7)
+                    {
+                        if (isTie())
+                        {
+                            playAgain = dialogBox.showConfirmDialog(null, "Tie.\nPlay Again?", "Play Again?", JOptionPane.YES_NO_OPTION);
+
+                            if (playAgain == dialogBox.YES_OPTION)
+                            {
+                                resetBoard();
+                            }
+                            else
+                            {
+                                System.exit(0);
+                            }
+                        }
+                    }
+                }
             }
 
             if (isOMove)
             {
                 tile.setText("O");
                 board[tile.getRow()][tile.getCol()] = "O";
+                showBoard();
+
+                if (turnCounter >= 5)
+                {
+                    if (isWin("O"))
+                    {
+                        playAgain = dialogBox.showConfirmDialog(null, "O wins.\nPlay Again?", "Play Again?", JOptionPane.YES_NO_OPTION);
+
+                        if (playAgain == dialogBox.YES_OPTION)
+                        {
+                            resetBoard();
+                        }
+                        else
+                        {
+                            System.exit(0);
+                        }
+                    }
+                    else if (turnCounter >= 7)
+                    {
+                        if (isTie())
+                        {
+                            playAgain = dialogBox.showConfirmDialog(null, "Tie.\nPlay Again?", "Play Again?", JOptionPane.YES_NO_OPTION);
+
+                            if (playAgain == dialogBox.YES_OPTION)
+                            {
+                                resetBoard();
+                            }
+                            else
+                            {
+                                System.exit(0);
+                            }
+                        }
+                    }
+                }
             }
-
-            changeTurn();
-
+            if (turnCounter != 0)
+            {
+                changeTurn();
+            }
         }
         else
         {
-            dialogBox = new JOptionPane("Invalid Move");
+            dialogBox.showMessageDialog(null, "Illegal Move.", "Error", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -164,6 +256,157 @@ public class TicTacToeFrame extends JFrame
         }
     }
 
+    private static boolean isWin(String player)
+    {
+        if(isColWin(player) || isRowWin(player) || isDiagnalWin(player))
+        {
+            return true;
+        }
+
+        return false;
+    }
+    private static boolean isColWin(String player)
+    {
+        // checks for a col win for specified player
+        for(int col=0; col < COL; col++)
+        {
+            if(board[0][col].equals(player) &&
+                    board[1][col].equals(player) &&
+                    board[2][col].equals(player))
+            {
+                return true;
+            }
+        }
+        return false; // no col win
+    }
+    private static boolean isRowWin(String player)
+    {
+        // checks for a row win for the specified player
+        for(int row=0; row < ROW; row++)
+        {
+            if(board[row][0].equals(player) &&
+                    board[row][1].equals(player) &&
+                    board[row][2].equals(player))
+            {
+                return true;
+            }
+        }
+        return false; // no row win
+    }
+    private static boolean isDiagnalWin(String player)
+    {
+        // checks for a diagonal win for the specified player
+
+        if(board[0][0].equals(player) &&
+                board[1][1].equals(player) &&
+                board[2][2].equals(player) )
+        {
+            return true;
+        }
+        if(board[0][2].equals(player) &&
+                board[1][1].equals(player) &&
+                board[2][0].equals(player) )
+        {
+            return true;
+        }
+        return false;
+    }
+
+    // checks for a tie before board is filled.
+    // check for the win first to be efficient
+    private static boolean isTie()
+    {
+        boolean xFlag = false;
+        boolean oFlag = false;
+        // Check all 8 win vectors for an X and O so
+        // no win is possible
+        // Check for row ties
+        for(int row=0; row < ROW; row++)
+        {
+            if(board[row][0].equals("X") ||
+                    board[row][1].equals("X") ||
+                    board[row][2].equals("X"))
+            {
+                xFlag = true; // there is an X in this row
+            }
+            if(board[row][0].equals("O") ||
+                    board[row][1].equals("O") ||
+                    board[row][2].equals("O"))
+            {
+                oFlag = true; // there is an O in this row
+            }
+
+            if(! (xFlag && oFlag) )
+            {
+                return false; // No tie can still have a row win
+            }
+
+            xFlag = oFlag = false;
+
+        }
+        // Now scan the columns
+        for(int col=0; col < COL; col++)
+        {
+            if(board[0][col].equals("X") ||
+                    board[1][col].equals("X") ||
+                    board[2][col].equals("X"))
+            {
+                xFlag = true; // there is an X in this col
+            }
+            if(board[0][col].equals("O") ||
+                    board[1][col].equals("O") ||
+                    board[2][col].equals("O"))
+            {
+                oFlag = true; // there is an O in this col
+            }
+
+            if(! (xFlag && oFlag) )
+            {
+                return false; // No tie can still have a col win
+            }
+        }
+        // Now check for the diagonals
+        xFlag = oFlag = false;
+
+        if(board[0][0].equals("X") ||
+                board[1][1].equals("X") ||
+                board[2][2].equals("X") )
+        {
+            xFlag = true;
+        }
+        if(board[0][0].equals("O") ||
+                board[1][1].equals("O") ||
+                board[2][2].equals("O") )
+        {
+            oFlag = true;
+        }
+        if(! (xFlag && oFlag) )
+        {
+            return false; // No tie can still have a diag win
+        }
+        xFlag = oFlag = false;
+
+        if(board[0][2].equals("X") ||
+                board[1][1].equals("X") ||
+                board[2][0].equals("X") )
+        {
+            xFlag =  true;
+        }
+        if(board[0][2].equals("O") ||
+                board[1][1].equals("O") ||
+                board[2][0].equals("O") )
+        {
+            oFlag =  true;
+        }
+        if(! (xFlag && oFlag) )
+        {
+            return false; // No tie can still have a diag win
+        }
+
+        // Checked every vector so I know I have a tie
+        return true;
+    }
+
     // Method for validation and testing, outputs current board to console
     // Ensures variable consistency w/ GUI
     public static void showBoard()
@@ -174,5 +417,6 @@ public class TicTacToeFrame extends JFrame
         System.out.println(board[2][0] + " | " + board[2][1] + " | " + board[2][2]);
         System.out.println("X move: " + isXMove);
         System.out.println("O move: " + isOMove);
+        System.out.println("Turn: " + turnCounter);
     }
 }

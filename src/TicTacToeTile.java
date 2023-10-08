@@ -1,5 +1,6 @@
 
 import javax.swing.JButton;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /*
@@ -25,8 +26,9 @@ public class TicTacToeTile extends JButton {
         addActionListener((ActionEvent ae) ->
         {
             TicTacToeFrame.markSpace(this);
-            TicTacToeFrame.showBoard();
         });
+
+        setFont(new Font("Montserrat", Font.BOLD, 40));
     }
         public int getRow()
         {
