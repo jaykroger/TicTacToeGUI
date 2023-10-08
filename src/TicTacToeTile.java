@@ -1,5 +1,7 @@
 
 import javax.swing.JButton;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -11,27 +13,30 @@ import javax.swing.JButton;
  *
  * @author wulft
  */
-public class TicTacToeTile extends JButton
-{
+public class TicTacToeTile extends JButton {
     private int row;
     private int col;
-    private boolean isX = false;
-    private boolean isO = false;
 
     public TicTacToeTile(int row, int col)
     {
         super();
         this.row = row;
         this.col = col;
+
+        addActionListener((ActionEvent ae) ->
+        {
+            TicTacToeFrame.markSpace(this);
+        });
+
+        setFont(new Font("Montserrat", Font.BOLD, 40));
+    }
+        public int getRow()
+        {
+            return row;
+        }
+        public int getCol()
+        {
+            return col;
+        }
     }
 
-    public int getRow()
-    {
-        return row;
-    }
-    public int getCol()
-    {
-        return col;
-    }
-
-}
