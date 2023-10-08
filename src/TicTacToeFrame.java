@@ -32,14 +32,14 @@ public class TicTacToeFrame extends JFrame
 
     // Button Panel
     JButton quitButton;
-    JOptionPane dialogBox;
+    static JOptionPane dialogBox;
 
     // Backend Game Logic
     private static final int ROW = 3;
     private static final int COL = 3;
     private int turnCounter = 0;
-    private boolean isXMove = true;
-    private boolean isOMove = false;
+    private static boolean isXMove = true;
+    private static boolean isOMove = false;
     private static String[][] board = new String[ROW][COL];
 
 
@@ -60,9 +60,6 @@ public class TicTacToeFrame extends JFrame
         add(mainPanel);
 
         resetBoard();
-        System.out.println(board[0][0] + " | " + board[0][1] + " | " + board[0][2]);
-        System.out.println(board[1][0] + " | " + board[1][1] + " | " + board[1][2]);
-        System.out.println(board[2][0] + " | " + board[2][1] + " | " + board[2][2]);
     }
 
 
@@ -93,18 +90,6 @@ public class TicTacToeFrame extends JFrame
         bottomMiddleTile = new TicTacToeTile(2, 1);
         bottomRightTile = new TicTacToeTile(2, 2);
 
-
-        topLeftTile.addActionListener((ActionEvent ae) ->
-        {
-            markSpace(topLeftTile);
-            changeTurn();
-        });
-
-        topMiddleTile.addActionListener((ActionEvent ae) ->
-        {
-            markSpace(topMiddleTile);
-            changeTurn();
-        });
 
         gamePanel.add(topLeftTile);
         gamePanel.add(topMiddleTile);
@@ -139,7 +124,7 @@ public class TicTacToeFrame extends JFrame
         }
     }
 
-    private void markSpace(TicTacToeTile tile)
+    public static void markSpace(TicTacToeTile tile)
     {
         if (board[tile.getRow()][tile.getCol()].equalsIgnoreCase(" "))
         {
@@ -154,6 +139,9 @@ public class TicTacToeFrame extends JFrame
                 tile.setText("O");
                 board[tile.getRow()][tile.getCol()] = "O";
             }
+
+            changeTurn();
+
         }
         else
         {
@@ -161,7 +149,7 @@ public class TicTacToeFrame extends JFrame
         }
     }
 
-    private void changeTurn()
+    private static void changeTurn()
     {
         if (isXMove)
         {
@@ -174,5 +162,17 @@ public class TicTacToeFrame extends JFrame
             isXMove = true;
             isOMove = false;
         }
+    }
+
+    // Method for validation and testing, outputs current board to console
+    // Ensures variable consistency w/ GUI
+    public static void showBoard()
+    {
+        System.out.println();
+        System.out.println(board[0][0] + " | " + board[0][1] + " | " + board[0][2]);
+        System.out.println(board[1][0] + " | " + board[1][1] + " | " + board[1][2]);
+        System.out.println(board[2][0] + " | " + board[2][1] + " | " + board[2][2]);
+        System.out.println("X move: " + isXMove);
+        System.out.println("O move: " + isOMove);
     }
 }
